@@ -1,0 +1,130 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #16181a;
+}
+
+body, #input {
+  font-family: 'Space Mono', Courier, monospace;
+}
+
+#container {
+  display: grid;
+  grid-template-rows: 40px 1fr;
+  grid-template-columns: 1fr;
+  grid-template-areas: "head" "chat";
+  height: 600px;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px;
+  box-shadow: 0 32px 64px #0006;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+header {
+  grid-area: head;
+  background-color: #232d31;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.window-title {
+  color: #f9f9fa;
+}
+
+.window-title::before {
+  content: "\B6";
+  font-family: sans-serif;
+  font-size: .8em;
+  vertical-align: 2px;
+  margin: 0 15px;
+  opacity: .3;
+}
+
+.window-title .online {
+  opacity: .5;
+}
+
+header .tools {
+  margin-right: 15px;
+}
+
+header .tools button {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+header .tools button:hover i {
+  opacity: .75;
+}
+
+header .tools button i {
+  color: #f9f9fa;
+  vertical-align: text-bottom;
+  font-size: 23px;
+  opacity: .3;
+  transition: .25s cubic-bezier(.07,.95,0,1);
+}
+
+#chat {
+  overflow: hidden;
+}
+
+#chat .chat {
+  grid-area: chat;
+  width: calc(100% - 60px);
+  padding: 30px;
+  padding-right: 50px;
+  background: #191d1f;
+  color: #fff;
+  height: calc(100% - 60px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#chat #messages .post {
+  line-height: 18px;
+  margin-bottom: 18px;
+}
+
+#chat #messages .post .info .author {
+  color: #30e60b;
+}
+#chat #messages .post .info .author::before {
+  content: "<";
+  color: var(--alt-color);
+}
+#chat #messages .post .info .author::after {
+  content: ">";
+  color: var(--alt-color);
+}
+
+#chat #messages .post .info .time {
+  opacity: .3;
+}
+
+#chat #messages .message::before {
+  content: "\B6";
+  font-family: sans-serif;
+  font-size: .8em;
+  vertical-align: 2px;
+  margin-right: 5px;
+  opacity: .3;
+}
+
+#chat #input {
+  resize: none;
+  color: #fff;
+  width: 100%;
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+  height: 300px;
+}

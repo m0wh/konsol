@@ -1,0 +1,30 @@
+{
+  "name": "konsol",
+  "version": "1.0.0",
+  "description": "An evolved live chat",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m0wh/konsol.git"
+  },
+  "keywords": [
+    "chat",
+    "socket.io",
+    "console",
+    "design"
+  ],
+  "author": "Malo Widerspach",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/m0wh/konsol/issues"
+  },
+  "homepage": "https://github.com/m0wh/konsol#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0",
+    "username-generator": "^1.1.0"
+  }
+}
