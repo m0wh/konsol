@@ -11,6 +11,7 @@ body, #input {
 }
 
 #container {
+  position: relative;
   display: grid;
   grid-template-rows: 40px 1fr;
   grid-template-columns: 1fr;
@@ -22,6 +23,7 @@ body, #input {
   box-shadow: 0 32px 64px #0006;
   overflow: hidden;
   border-radius: 5px;
+  background: #191d1f;
 }
 
 header {
@@ -81,7 +83,6 @@ header .tools button i {
   width: calc(100% - 60px);
   padding: 30px;
   padding-right: 50px;
-  background: #191d1f;
   color: #fff;
   height: calc(100% - 60px);
   overflow-y: auto;
@@ -127,4 +128,26 @@ header .tools button i {
   margin: 0;
   padding: 0;
   height: 300px;
+}
+
+#typing-container {
+  /* p > span.name */
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #191d1f;
+  z-index: 50;
+}
+
+#typing-container p {
+  color: #f9f9fa99;
+  line-height: 1.5;
+  font-size: 12px;
+  opacity: .75;
+  margin: 5px 10px;
+}
+
+#typing-container p .name {
+  color: #f9f9fa;
+  font-weight: 700;
 }

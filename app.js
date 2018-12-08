@@ -10,6 +10,7 @@ const port = process.env.PORT || 3000;
 app.use(express.static('public'));
 
 let users = {};
+let typingIDs = [];
 
 io.on('connection', socket => {
   socket.name = generateUsername("_");
@@ -21,8 +22,17 @@ io.on('connection', socket => {
 
   io.emit("userJoined", users);
 
-  socket.on('typing', () => {
-    socket.broadcast.emit('someoneTyping', socket.name);
+  socket.on('typingEvent', isTyping => {
+    if (typingIDs.indexOf(socket.id) !== -1) {
+      typingIDs.splice(typingIDs.indexOf(socket.id), 1);
+    }
+
+    if (isTyping) {
+      typingIDs.push(socket.id);
+    }
+    
+    console.log(typingIDs);
+    io.emit('typing', typingIDs);
   });
 
   socket.on('sendMessage', content => {
