@@ -13,14 +13,14 @@ let users = {};
 let typingIDs = [];
 
 io.on('connection', socket => {
-  socket.name = generateUsername("_");
+  socket.name = generateUsername("_").replace("-","");
   socket.color = generateColor();
   users[socket.id] = {
     name: socket.name,
     color: socket.color
   }
 
-  io.emit("userJoined", users);
+  io.emit("userJoined", { allUsers: users, id: socket.id });
 
   socket.on('typingEvent', isTyping => {
     if (typingIDs.indexOf(socket.id) !== -1) {
@@ -31,23 +31,60 @@ io.on('connection', socket => {
       typingIDs.push(socket.id);
     }
     
-    console.log(typingIDs);
     io.emit('typing', typingIDs);
   });
 
-  socket.on('sendMessage', content => {
-    const message = {
-      from: socket.id,
-      time: Date.now,
-      text: content
-    };
+  socket.on('sendMessage', data => {
+    const content = data.trim();
+    if (content[0] === "/") { // It's a command !
+      const command = {
+        command: content.substr(1).split(" ")[0],
+        arguments: content.substr(1).split(" ").slice(1)
+      }
+      
+      if (["username", "un"].includes(command.command)) {
+        rename(command.arguments[0])
+      } else if (["color", "c"].includes(command.command)) {
+        if (command.arguments[0] < 8 && command.arguments[0] >= 0) {
+          recolor(command.arguments[0]);
+        }
+      } else if (["me"].includes(command.command)) {
+        io.emit("meAction", { id: socket.id, action: command.arguments.join(" "), time: Date.now() });
+      } else if (["clear", "cls"].includes(command.command)) {
+        socket.emit("clearConsole");
+      } else if (["help", "h", "?"].includes(command.command)) {
+        socket.emit("displayHelp", { time: Date.now() });
+      } else {
+        socket.emit("commandError", `Unknown command /${command.command}`);
+      }
 
-    io.emit('newMessage', message);
+    } else {
+      const message = {
+        from: socket.id,
+        time: Date.now,
+        text: content
+      };
+
+      io.emit('newMessage', message);
+    }
   });
 
   socket.on('disconnect', () => {
-    io.emit("userQuit", users);
+    io.emit("userQuit", { allUsers: users, id: socket.id });
   });
+
+
+  const rename = newName => {
+    socket.name = newName;
+    users[socket.id].name = socket.name;
+    io.emit("rename", { allUsers: users, id: socket.id });
+  }
+
+  const recolor = newColor => {
+    socket.color = generateColor(newColor);
+    users[socket.id].color = socket.color;
+    io.emit("recolor", { allUsers: users, id: socket.id });
+  }
 });
 
 

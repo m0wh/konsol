@@ -23,20 +23,66 @@ function keyChange(e) {
   }
 }
 
-socket.on("userJoined", function(allUsers) {
-  users = allUsers;
+socket.on("userJoined", function(data) {
+  users = data.allUsers;
   userCounter.innerHTML = Object.keys(users).length;
 });
 
-socket.on("userQuit", function(allUsers) {
-  users = allUsers;
+socket.on("userQuit", function(data) {
+  users = data.allUsers;
   userCounter.innerHTML = Object.keys(users).length;
+});
+
+socket.on("rename", function(data) {
+  chatContainer.innerHTML += "\
+    <div class=\"post notification\">\
+      <p class=\"message\"><span class=\"user\" style=\"color:" + users[data.id].color.main + "\">" + users[data.id].name + "</span> is now <span style=\"color:" + users[data.id].color.main + "\">" + data.allUsers[data.id].name + "</span>!</p>\
+    </div>\
+  ";
+  users = data.allUsers;
+  userCounter.innerHTML = Object.keys(users).length;
+});
+
+socket.on("recolor", function(data) {
+  chatContainer.innerHTML += "\
+    <div class=\"post notification\">\
+      <p class=\"message\"><span class=\"user\" style=\"color:" + users[data.id].color.main + "\">" + users[data.id].name + "</span>'s color is now <span style=\"color:" + data.allUsers[data.id].color.main + "\">" + data.allUsers[data.id].color.main + "</span>!</p>\
+    </div>\
+  ";
+  users = data.allUsers;
+  userCounter.innerHTML = Object.keys(users).length;
+});
+
+socket.on("clearConsole", function() {
+  chatContainer.innerHTML = "";
+});
+
+socket.on("displayHelp", function(data) {
+  chatContainer.innerHTML = "\
+    <div class=\"post help notification\">\
+      <p class=\"info\"><span class=\"time\">" + moment(data.time).format("HH:mm") + "</span> Help</p>\
+      <p class=\"message\"><b>/help: </b> displays some help.</p>\
+      <p class=\"message\"><b>/username &lt;new name&gt;: </b> changes your username.</p>\
+      <p class=\"message\"><b>/color &lt;color number (0-7)&gt;: </b> changes your color.</p>\
+      <p class=\"message\"><b>/me &lt;action&gt;: </b> displays a notification about yourself.</p>\
+      <p class=\"message\"><b>/clear: </b> clears the console.</p>\
+    </div>\
+  ";
+});
+
+socket.on("meAction", function(data) {
+  chatContainer.innerHTML += "\
+    <div class=\"post me notification\">\
+      <p class=\"info\"><span class=\"time\">" + moment(data.time).format("HH:mm") + "</span></p>\
+      <p class=\"message\"><span class=\"actor\" style=\"color:" + users[data.id].color.main + "\">" + users[data.id].name + "</span> " + data.action + "</p>\
+    </div>\
+  ";
 });
 
 socket.on("newMessage", function(message) {
   chatContainer.innerHTML += "\
-    <div class=\"post\">\
-      <p class=\"info\"><span class=\"time\">" + moment(message.time).format("hh:mm") + "</span> <span class=\"author\" style=\"color:" + users[message.from].color.main + ";--alt-color:" + users[message.from].color.alt + "\">" + users[message.from].name + "</span></p>\
+    <div class=\"post talk\">\
+      <p class=\"info\"><span class=\"time\">" + moment(message.time).format("HH:mm") + "</span> <span class=\"author\" style=\"color:" + users[message.from].color.main + ";--alt-color:" + users[message.from].color.alt + "\">" + users[message.from].name + "</span></p>\
       <p class=\"message\">" + message.text + "</p>\
     </div>\
   ";
@@ -60,7 +106,9 @@ socket.on("typing", function(typingIDs) {
   typingContainer.innerHTML = html;
 });
 
-
+socket.on("commandError", function(err) {
+  console.warn(err);
+})
 
 function formatStringArray(arr, beVerb) {
   var be = " is";
