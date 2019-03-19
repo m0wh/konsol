@@ -37,26 +37,31 @@ io.on('connection', socket => {
   socket.on('sendMessage', data => {
     const content = data.trim();
     if (content[0] === "/") { // It's a command !
-      const command = {
-        command: content.substr(1).split(" ")[0],
-        arguments: content.substr(1).split(" ").slice(1)
+      const exec = (socket, commandString) => {
+        const { keyword, args } = { keyword: commandString.substr(1).split(" ")[0], args: commandString.substr(1).split(" ").slice(1) }
+        commands.forEach(command => command.keywords.includes(keyword) ? command.callback({ socket, args }) : commandError({ socket, args }))
       }
-      
-      if (["username", "un"].includes(command.command)) {
-        rename(command.arguments[0])
-      } else if (["color", "c"].includes(command.command)) {
-        if (command.arguments[0] < 8 && command.arguments[0] >= 0) {
-          recolor(command.arguments[0]);
-        }
-      } else if (["me"].includes(command.command)) {
-        io.emit("meAction", { id: socket.id, action: command.arguments.join(" "), time: Date.now() });
-      } else if (["clear", "cls"].includes(command.command)) {
-        socket.emit("clearConsole");
-      } else if (["help", "h", "?"].includes(command.command)) {
-        socket.emit("displayHelp", { time: Date.now() });
-      } else {
-        socket.emit("commandError", `Unknown command /${command.command}`);
-      }
+
+      // const command = {
+      //   command: content.substr(1).split(" ")[0],
+      //   arguments: content.substr(1).split(" ").slice(1)
+      // }
+      // 
+      // if (["username", "un"].includes(command.command)) {
+      //   rename(command.arguments[0])
+      // } else if (["color", "c"].includes(command.command)) {
+      //   if (command.arguments[0] < 8 && command.arguments[0] >= 0) {
+      //     recolor(command.arguments[0]);
+      //   }
+      // } else if (["me"].includes(command.command)) {
+      //   io.emit("meAction", { id: socket.id, action: command.arguments.join(" "), time: Date.now() });
+      // } else if (["clear", "cls"].includes(command.command)) {
+      //   socket.emit("clearConsole");
+      // } else if (["help", "h", "?"].includes(command.command)) {
+      //   socket.emit("displayHelp", { time: Date.now() });
+      // } else {
+      //   socket.emit("commandError", `Unknown command /${command.command}`);
+      // }
 
     } else {
       const message = {
@@ -72,19 +77,6 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     io.emit("userQuit", { allUsers: users, id: socket.id });
   });
-
-
-  const rename = newName => {
-    socket.name = newName;
-    users[socket.id].name = socket.name;
-    io.emit("rename", { allUsers: users, id: socket.id });
-  }
-
-  const recolor = newColor => {
-    socket.color = generateColor(newColor);
-    users[socket.id].color = socket.color;
-    io.emit("recolor", { allUsers: users, id: socket.id });
-  }
 });
 
 
